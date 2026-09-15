@@ -8,6 +8,7 @@
 	summary="Implements the WMF video playback in Cinder."
 	core="true"
 	>
+	<supports os="msw" />
 	<sourcePattern>src/*.cpp</sourcePattern>
 	<sourcePattern>src/presenter/*.cpp</sourcePattern>
 	<sourcePattern>src/presenter/common/*.cpp</sourcePattern>
