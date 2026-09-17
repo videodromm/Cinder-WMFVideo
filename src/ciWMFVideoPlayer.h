@@ -114,6 +114,15 @@ class ciWMFVideoPlayer
 
 		bool hasTexture() const { return ( mPlayer && mTex ); }
 		ci::vec2 getTextureSize();
+		// lets callers cache the current frame as a normal texture ref (e.g. to bind it like any
+		// other input texture), as an alternative to ScopedVideoTextureBind's scoped GL-state bind.
+		ci::gl::TextureRef getTexture() const { return mTex; }
+		// the DX/GL interop shared texture (see PresentEngine::createSharedTexture) must be
+		// locked around any GL access to it, same as draw() already does internally - a caller
+		// binding/sampling getTexture() directly (bypassing draw()) must wrap that access with
+		// these, or the GL side never sees the D3D-decoded frames (texture stays black/stale).
+		bool lockSharedTexture();
+		bool unlockSharedTexture();
 
 		void setVideoFill( VideoFill videoFill ) { mVideoFill = videoFill; }
 

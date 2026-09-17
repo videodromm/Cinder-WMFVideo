@@ -207,6 +207,18 @@ void ciWMFVideoPlayer::draw( int x, int y, int w, int h )
 	mPlayer->mEVRPresenter->unlockSharedTexture();
 }
 
+bool ciWMFVideoPlayer::lockSharedTexture()
+{
+	if( !mPlayer ) { return false; }
+	return mPlayer->mEVRPresenter->lockSharedTexture();
+}
+
+bool ciWMFVideoPlayer::unlockSharedTexture()
+{
+	if( !mPlayer ) { return false; }
+	return mPlayer->mEVRPresenter->unlockSharedTexture();
+}
+
 bool ciWMFVideoPlayer::isPlaying()
 {
 	return mPlayer->GetState() == STARTED;
