@@ -21,7 +21,8 @@ ciWMFVideoPlayer::ScopedVideoTextureBind::ScopedVideoTextureBind( const ciWMFVid
 	, mTextureUnit( textureUnit )
 	, mPlayer( video.mPlayer )
 {
-	mPlayer->mEVRPresenter->lockSharedTexture();
+	// the presenter is released (null) once the player is closed, e.g. on the window's close signal
+	if( mPlayer && mPlayer->mEVRPresenter ) mPlayer->mEVRPresenter->lockSharedTexture();
 	mCtx->pushTextureBinding( mTarget, video.mTex->getId(), mTextureUnit );
 }
 
@@ -32,7 +33,7 @@ ciWMFVideoPlayer::ScopedVideoTextureBind::ScopedVideoTextureBind( const std::sha
 ciWMFVideoPlayer::ScopedVideoTextureBind::~ScopedVideoTextureBind()
 {
 	mCtx->popTextureBinding( mTarget, mTextureUnit );
-	mPlayer->mEVRPresenter->unlockSharedTexture();
+	if( mPlayer && mPlayer->mEVRPresenter ) mPlayer->mEVRPresenter->unlockSharedTexture();
 }
 
 ciWMFVideoPlayer* findPlayers( HWND hwnd )
@@ -182,6 +183,9 @@ void ciWMFVideoPlayer::draw( int x, int y, int w, int h )
 	if( mIsAudioOnly ) {
 		return;
 	}
+	if( !mPlayer || !mPlayer->mEVRPresenter ) {
+		return;
+	}
 
 	mPlayer->mEVRPresenter->lockSharedTexture();
 
@@ -209,13 +213,14 @@ void ciWMFVideoPlayer::draw( int x, int y, int w, int h )
 
 bool ciWMFVideoPlayer::lockSharedTexture()
 {
-	if( !mPlayer ) { return false; }
+	// the presenter is released (null) once the player is closed, e.g. on the window's close signal
+	if( !mPlayer || !mPlayer->mEVRPresenter ) { return false; }
 	return mPlayer->mEVRPresenter->lockSharedTexture();
 }
 
 bool ciWMFVideoPlayer::unlockSharedTexture()
 {
-	if( !mPlayer ) { return false; }
+	if( !mPlayer || !mPlayer->mEVRPresenter ) { return false; }
 	return mPlayer->mEVRPresenter->unlockSharedTexture();
 }
 
